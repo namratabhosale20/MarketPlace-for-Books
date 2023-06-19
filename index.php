@@ -1,47 +1,107 @@
-<?php
-include_once 'php_files/config.php';
-//checking session
-session_start();
-if(isset($_SESSION['admin_name'])) {
-    header("Location: ".$base_url."admin/dashboard.php");
+<?php include 'config.php';  //include config
+// set dynamic title
+$db = new Database();
+$db->select('options','site_title',null,null,null,null);
+$result = $db->getResult();
+
+if(!empty($result)){ 
+    $title = $result[0]['site_title']; 
+}else{ 
+    $title = "Shopping Project";
 }
-?>
-<!doctype html>
-<html>
-   <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Admin : SHBS</title>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="../css/bootstrap.min.css" />
-        <link rel="stylesheet" href="css/font-awesome.css">
-        <link rel="stylesheet" href="../css/style.css">
-    </head>
-    <body>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-offset-3 col-md-6">
-                    <div class="login-form">
-                        <h1 class="logo">Second Hand Book Store</h1>
-                        <!-- Form -->
-                        <form id="adminLogin" method ="POST" autocomplete="off">
-                            <div class="form-group">
-                                <label>Username</label>
-                                <input type="text" class="form-control username" placeholder="Username" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input type="password" class="form-control password" placeholder="password" required>
-                            </div>
-                            <input type="submit" name="login" class="btn" value="login"/>
-                        </form>
-                        <!-- /Form -->
+// include header 
+include 'header.php'; ?>
+<div id="banner">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="banner-content ">
+                    <div class="banner-carousel owl-carousel owl-theme">
+                        <div class="item">
+                            <img src="images/banner-img-2.jpg" alt=""/>
+                        </div>
+                        <div class="item">
+                            <img src="images/banner-img-1.jpg" alt=""/>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <script type="text/javascript" src="js/jquery.min.js"></script>
-        <script type="text/javascript" src="js/admin_actions.js"></script>
-    </body>
-</html>
+    </div>
+</div>
+<div class="product-section popular-products">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="section-head">Popular Products</h2>
+                <div class="popular-carousel owl-carousel owl-theme">
+                    <?php
+                        $db->select('products','*',null,'product_views > 0','product_views DESC',10);
+                        $result = $db->getResult();
+                        if(count($result) > 0){
+                            foreach($result as $row){ ?>
+                    <div class="product-grid latest item">
+                        <div class="product-image popular">
+                            <a class="image" href="single_product.php?pid=<?php echo $row['product_id']; ?>">
+                                <img class="pic-1" src="product-images/<?php echo $row['featured_image']; ?>">
+                            </a>
+                            <div class="product-button-group">
+                                <a href="single_product.php?pid=<?php echo $row['product_id']; ?>" ><i class="fa fa-eye"></i></a>
+                                <a href="" class="add-to-cart" data-id="<?php echo $row['product_id']; ?>"><i class="fa fa-shopping-cart"></i></a>
+                                <a href="" class="add-to-wishlist" data-id="<?php echo $row['product_id']; ?>"><i class="fa fa-heart"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-content">
+                            <h3 class="title">
+                                <a href="single_product.php?pid=<?php echo $row['product_id']; ?>"><?php echo substr($row['product_title'],0,25),'...'; ?></a>
+                            </h3>
+                            <div class="price"><?php echo $cur_format; ?> <?php echo $row['product_price']; ?></div>
+                        </div>
+                    </div>
+                    <?php    }
+                    }else{
+                } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="product-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="section-head">Latest Products</h2>
+                <div class="latest-carousel owl-carousel owl-theme">
+                    <?php
+            $db = new Database();
+            $db->select('products','*',null,null,'product_id DESC',6);
+            $result = $db->getResult();
+            if(count($result) > 0){
+                foreach($result as $row){ ?>
+                    <div class="product-grid latest item">
+                        <div class="product-image popular">
+                            <a class="image" href="single_product.php?pid=<?php echo $row['product_id']; ?>">
+                                <img class="pic-1" src="product-images/<?php echo $row['featured_image']; ?>">
+                            </a>
+                            <div class="product-button-group">
+                                <a href="single_product.php?pid=<?php echo $row['product_id']; ?>" ><i class="fa fa-eye"></i></a>
+                                <a href="" class="add-to-cart" data-id="<?php echo $row['product_id']; ?>"><i class="fa fa-shopping-cart"></i></a>
+                                <a href="" class="add-to-wishlist" data-id="<?php echo $row['product_id']; ?>"><i class="fa fa-heart"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-content">
+                            <h3 class="title">
+                                <a href="single_product.php?pid=<?php echo $row['product_id']; ?>"><?php echo substr($row['product_title'],0,25),'...'; ?></a>
+                            </h3>
+                            <div class="price"><?php echo $cur_format; ?> <?php echo $row['product_price']; ?></div>
+                        </div>
+                    </div>
+        <?php    }
+            }?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include 'footer.php'; ?>
